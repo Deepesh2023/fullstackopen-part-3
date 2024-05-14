@@ -64,6 +64,16 @@ app.get("/api/persons/:id", (request, response) => {
 });
 
 app.post("/api/persons", (request, response) => {
+  if (!request.body.name || !request.body.number) {
+    response.status(400).json({ error: "please provide correct data" });
+    return;
+  } else if (persons.some((person) => person.name === request.body.name)) {
+    response.status(400).json({ error: "name already present" });
+    return;
+  }
+
+  console.log("hi");
+
   const newPerson = {
     id: generateId(),
     name: request.body.name,
@@ -71,7 +81,7 @@ app.post("/api/persons", (request, response) => {
   };
 
   persons = persons.concat(newPerson);
-  response.status(200).end();
+  response.status(201).end();
 });
 
 app.delete("/api/persons/:id", (request, response) => {
