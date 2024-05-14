@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+app.use(express.json());
 
 const port = 3001;
 
@@ -26,12 +27,19 @@ let persons = [
   },
 ];
 
+const generateId = () => {
+  if (persons.length > 0) {
+    const exsistingIds = persons.map((person) => person.id);
+    const maxId = Math.max(...exsistingIds);
+
+    return Math.floor(Math.random(100 - maxId + 1) + maxId + 1);
+  }
+
+  return 0;
+};
+
 app.get("/", (request, response) => {
   response.send("<h1>Phonebook</h1>");
-});
-
-app.get("/api/persons", (request, response) => {
-  response.json(persons);
 });
 
 app.get("/info", (request, response) => {
@@ -40,17 +48,30 @@ app.get("/info", (request, response) => {
   response.send(info);
 });
 
+app.get("/api/persons", (request, response) => {
+  response.json(persons);
+});
+
 app.get("/api/persons/:id", (request, response) => {
   const id = Number(request.params.id);
   const person = persons.find((person) => person.id === id);
-
-  console.log(person);
 
   if (person) {
     response.json(person);
   } else {
     response.status(404).end();
   }
+});
+
+app.post("/api/persons", (request, response) => {
+  const newPerson = {
+    id: generateId(),
+    name: request.body.name,
+    number: request.body.number,
+  };
+
+  persons = persons.concat(newPerson);
+  response.status(200).end();
 });
 
 app.delete("/api/persons/:id", (request, response) => {
