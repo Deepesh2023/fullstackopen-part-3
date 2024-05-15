@@ -1,10 +1,14 @@
 const express = require("express");
+
 var morgan = require("morgan");
+morgan.token("post_data", (request) => {
+  return JSON.stringify(request.body);
+});
 
 const app = express();
 
 app.use(express.json());
-app.use(morgan("tiny"));
+app.use(morgan(":method :url :status :response-time :post_data"));
 
 const port = 3001;
 
