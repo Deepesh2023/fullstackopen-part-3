@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 
 var morgan = require("morgan");
 morgan.token("post_data", (request) => {
@@ -7,6 +8,8 @@ morgan.token("post_data", (request) => {
 
 const app = express();
 
+app.use(express.static("dist"));
+app.use(cors());
 app.use(express.json());
 app.use(morgan(":method :url :status :response-time :post_data"));
 
@@ -46,8 +49,8 @@ const generateId = () => {
   return 0;
 };
 
-app.get("/", (request, response) => {
-  response.send("<h1>Phonebook</h1>");
+app.get("/dist/index.html", (request, response) => {
+  response.status(200).end();
 });
 
 app.get("/info", (request, response) => {
