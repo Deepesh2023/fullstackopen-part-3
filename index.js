@@ -13,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan(":method :url :status :response-time :post_data"));
 
-const port = 3001;
+const PORT = process.env.PORT || 3001;
 
 let persons = [
   {
@@ -99,6 +99,6 @@ app.delete("/api/persons/:id", (request, response) => {
   response.status(204).end();
 });
 
-app.listen(port, () => {
-  console.log("server is running on", port);
+app.listen(PORT, () => {
+  console.log("server is running on", PORT);
 });
