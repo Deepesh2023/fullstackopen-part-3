@@ -90,7 +90,7 @@ app.post("/api/persons", (request, response) => {
   };
 
   persons = persons.concat(newPerson);
-  response.status(201).end();
+  response.json(newPerson);
 });
 
 app.delete("/api/persons/:id", (request, response) => {
