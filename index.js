@@ -1,6 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 
+require("dotenv").config();
+const Person = require("./models/person");
+
 var morgan = require("morgan");
 morgan.token("post_data", (request) => {
   return JSON.stringify(request.body);
@@ -13,41 +16,7 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan(":method :url :status :response-time :post_data"));
 
-const PORT = process.env.PORT || 3001;
-
-let persons = [
-  {
-    id: 1,
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: 2,
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: 3,
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: 4,
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-];
-
-const generateId = () => {
-  if (persons.length > 0) {
-    const exsistingIds = persons.map((person) => person.id);
-    const maxId = Math.max(...exsistingIds);
-
-    return Math.floor(Math.random(100 - maxId + 1) + maxId + 1);
-  }
-
-  return 0;
-};
+const PORT = process.env.PORT;
 
 app.get("/dist/index.html", (request, response) => {
   response.status(200).end();
@@ -55,12 +24,15 @@ app.get("/dist/index.html", (request, response) => {
 
 app.get("/info", (request, response) => {
   const date = new Date();
-  const info = `<p>Phonebook has info for ${persons.length} people</p> <p>${date}</p>`;
+  const info = `<p>Phonebook has info for ${Person.length} people</p> <p>${date}</p>`;
   response.send(info);
 });
 
 app.get("/api/persons", (request, response) => {
-  response.json(persons);
+  Person.find({}).then((result) => {
+    console.log(result);
+    response.json(result);
+  });
 });
 
 app.get("/api/persons/:id", (request, response) => {

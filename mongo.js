@@ -1,25 +1,30 @@
 const mongoose = require("mongoose");
+require("dotenv").config();
 
-if (process.argv.length < 3) {
-  console.log("please provide password");
-  process.exit(1);
-}
-
-const password = process.argv[2];
-const URL = `mongodb+srv://theinternetnivasi:${password}@phonebook.ja9gt2r.mongodb.net/phonebook?retryWrites=true&w=majority&appName=phonebook`;
+const url = process.env.MONGODB_URI;
 
 mongoose.set("strictQuery", false);
-mongoose.connect(URL);
+mongoose.connect(url);
 
 const personSchema = new mongoose.Schema({
   name: String,
   number: Number,
 });
 
+personSchema.set("toJSON", {
+  transform: (document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
+  },
+});
+
 const Person = mongoose.model("Person", personSchema);
 
-if (process.argv.length === 3) {
+if (process.argv.length === 2) {
   Person.find({}).then((result) => {
+    console.log("in json", JSON.stringify(result));
+
     console.log("Phonebook");
     result.forEach((person) => {
       console.log(person.name, person.number);
@@ -28,8 +33,8 @@ if (process.argv.length === 3) {
   });
 } else {
   const person = new Person({
-    name: process.argv[3],
-    number: process.argv[4],
+    name: process.argv[2],
+    number: process.argv[3],
   });
 
   person.save().then((result) => {
