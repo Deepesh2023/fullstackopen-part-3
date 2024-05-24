@@ -24,26 +24,24 @@ app.get("/dist/index.html", (request, response) => {
 
 app.get("/info", (request, response) => {
   const date = new Date();
-  const info = `<p>Phonebook has info for ${Person.length} people</p> <p>${date}</p>`;
-  response.send(info);
+  Person.countDocuments({})
+    .then((result) => {
+      const info = `<p>Phonebook has info for ${result} people</p> <p>${date}</p>`;
+      response.send(info);
+    })
+    .catch((error) => next(error));
 });
 
 app.get("/api/persons", (request, response) => {
   Person.find({}).then((result) => {
-    console.log(result);
     response.json(result);
   });
 });
 
-app.get("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const person = persons.find((person) => person.id === id);
-
-  if (person) {
-    response.json(person);
-  } else {
-    response.status(404).end();
-  }
+app.get("/api/persons/:id", (request, response, next) => {
+  Person.findById(request.params.id)
+    .then((result) => response.json(result))
+    .catch((error) => next(error));
 });
 
 app.post("/api/persons", (request, response) => {
@@ -57,15 +55,26 @@ app.post("/api/persons", (request, response) => {
     number: request.body.number,
   });
 
-  newPerson.save().then((result) => {
-    response.json(result);
-  });
+  newPerson
+    .save()
+    .then((result) => {
+      response.json(result);
+    })
+    .catch((error) => next(error));
+});
+
+app.put("/api/persons/:id", (request, response, next) => {
+  Person.findByIdAndUpdate(request.params.id, request.body, { new: true })
+    .then((result) => {
+      response.json(result).status(204);
+    })
+    .then((error) => next(error));
 });
 
 app.delete("/api/persons/:id", (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
     .then((result) => {
-      response.json(result);
+      response.json(result).status(204);
     })
     .catch((error) => next(error));
 });
