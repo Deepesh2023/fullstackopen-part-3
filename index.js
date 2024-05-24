@@ -62,11 +62,32 @@ app.post("/api/persons", (request, response) => {
   });
 });
 
-app.delete("/api/persons/:id", (request, response) => {
-  Person.findByIdAndDelete(request.params.id).then((result) => {
-    response.json(result);
-  });
+app.delete("/api/persons/:id", (request, response, next) => {
+  Person.findByIdAndDelete(request.params.id)
+    .then((result) => {
+      response.json(result);
+    })
+    .catch((error) => next(error));
 });
+
+const unknownEndPoint = (request, response) => {
+  response.status(404).send("<h1>Page not found</h1>");
+};
+
+app.use(unknownEndPoint);
+
+const errorHandling = (error, request, response, next) => {
+  if (error.name === "CastError") {
+    console.log(error.message);
+    return response
+      .status(400)
+      .send({ error: "person mentioned not available in phonbook" });
+  }
+
+  next(error);
+};
+
+app.use(errorHandling);
 
 app.listen(PORT, () => {
   console.log("server is running on", PORT);
