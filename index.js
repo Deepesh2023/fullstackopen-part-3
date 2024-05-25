@@ -44,7 +44,7 @@ app.get("/api/persons/:id", (request, response, next) => {
     .catch((error) => next(error));
 });
 
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
   if (!request.body.name || !request.body.number) {
     response.status(400).json({ error: "please provide correct data" });
     return;
@@ -64,7 +64,11 @@ app.post("/api/persons", (request, response) => {
 });
 
 app.put("/api/persons/:id", (request, response, next) => {
-  Person.findByIdAndUpdate(request.params.id, request.body, { new: true })
+  Person.findByIdAndUpdate(request.params.id, request.body, {
+    new: true,
+    runValidators: true,
+    context: "query",
+  })
     .then((result) => {
       response.json(result).status(204);
     })
@@ -91,6 +95,11 @@ const errorHandling = (error, request, response, next) => {
     return response
       .status(400)
       .send({ error: "person mentioned not available in phonbook" });
+  }
+
+  if (error.name === "ValidationError") {
+    console.log(error.message);
+    return response.status(400).send(error.message);
   }
 
   next(error);
