@@ -70,9 +70,14 @@ app.put("/api/persons/:id", (request, response, next) => {
     context: "query",
   })
     .then((result) => {
-      response.json(result);
+      if (result) {
+        response.json(result);
+      } else {
+        response.status(400).send("Contact was already deleted");
+      }
     })
     .catch((error) => {
+      console.log(error);
       next(error);
     });
 });
