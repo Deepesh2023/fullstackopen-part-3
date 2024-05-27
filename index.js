@@ -70,9 +70,11 @@ app.put("/api/persons/:id", (request, response, next) => {
     context: "query",
   })
     .then((result) => {
-      response.json(result).status(204);
+      response.json(result);
     })
-    .then((error) => next(error));
+    .catch((error) => {
+      next(error);
+    });
 });
 
 app.delete("/api/persons/:id", (request, response, next) => {

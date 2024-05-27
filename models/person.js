@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const url = process.env.MONGODB_URI;
+const phoneNumberPattern = /^\d{2,3}-\d+$/;
 
 mongoose.set("strictQuery", false);
 
@@ -20,8 +21,15 @@ const personSchema = new mongoose.Schema({
     minLength: 3,
   },
   number: {
-    type: Number,
+    type: String,
     required: true,
+    minLength: 8,
+    validate: {
+      validator: function (v) {
+        return phoneNumberPattern.test(v);
+      },
+      message: "Please provide the correct format",
+    },
   },
 });
 
