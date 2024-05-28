@@ -1,17 +1,20 @@
-const mongoose = require("mongoose");
+/* eslint-disable no-param-reassign, no-underscore-dangle */
+/* eslint-disable no-console */
+
+const mongoose = require('mongoose');
 
 const url = process.env.MONGODB_URI;
 const phoneNumberPattern = /^\d{2,3}-\d+$/;
 
-mongoose.set("strictQuery", false);
+mongoose.set('strictQuery', false);
 
 mongoose
   .connect(url)
   .then(() => {
-    console.log("connection established.");
+    console.log('connection established.');
   })
   .catch((error) => {
-    console.log("conneciton failed", error);
+    console.log('conneciton failed', error);
   });
 
 const personSchema = new mongoose.Schema({
@@ -25,15 +28,13 @@ const personSchema = new mongoose.Schema({
     required: true,
     minLength: 8,
     validate: {
-      validator: function (v) {
-        return phoneNumberPattern.test(v);
-      },
-      message: "Please provide the correct format",
+      validator: (v) => phoneNumberPattern.test(v),
+      message: 'Please provide the correct format',
     },
   },
 });
 
-personSchema.set("toJSON", {
+personSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();
     delete returnedObject._id;
@@ -41,4 +42,4 @@ personSchema.set("toJSON", {
   },
 });
 
-module.exports = mongoose.model("Person", personSchema);
+module.exports = mongoose.model('Person', personSchema);

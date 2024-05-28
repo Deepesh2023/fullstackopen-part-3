@@ -1,9 +1,12 @@
-const mongoose = require("mongoose");
-require("dotenv").config();
+/* eslint-disable no-param-reassign, no-underscore-dangle */
+/* eslint-disable no-console */
+
+const mongoose = require('mongoose');
+require('dotenv').config();
 
 const url = process.env.MONGODB_URI;
 
-mongoose.set("strictQuery", false);
+mongoose.set('strictQuery', false);
 mongoose.connect(url);
 
 const personSchema = new mongoose.Schema({
@@ -11,7 +14,7 @@ const personSchema = new mongoose.Schema({
   number: Number,
 });
 
-personSchema.set("toJSON", {
+personSchema.set('toJSON', {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();
     delete returnedObject._id;
@@ -19,13 +22,13 @@ personSchema.set("toJSON", {
   },
 });
 
-const Person = mongoose.model("Person", personSchema);
+const Person = mongoose.model('Person', personSchema);
 
 if (process.argv.length === 2) {
   Person.find({}).then((result) => {
-    console.log("in json", JSON.stringify(result));
+    console.log('in json', JSON.stringify(result));
 
-    console.log("Phonebook");
+    console.log('Phonebook');
     result.forEach((person) => {
       console.log(person.name, person.number);
     });
